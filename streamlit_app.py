@@ -104,30 +104,34 @@ st.caption("Select a demo, review or edit its configuration, and run it.")
 with st.sidebar:
     st.subheader("Demos")
     selected_label = st.radio("Select a demo", list(DEMOS.keys()), label_visibility="collapsed")
-    st.divider()
   
 
 demo = DEMOS[selected_label]
 
-with st.sidebar:
-    st.divider()
+
+@st.dialog(f"View source", width="large")
+def show_source_dialog(demo):
     if demo.get("no_single_source"):
         original_path = os.path.join(HERE, "demos", demo["folder"], demo["original_file"])
+        st.caption(
+            "This demo has no single original script — it's built from "
+            "notebook cells. Showing the wrapper that reproduces them instead."
+        )
     else:
         vendor_folder = demo.get("vendor_folder", demo["folder"])
         original_path = os.path.join(HERE, "vendor", "divi-demos", vendor_folder, demo["original_file"])
+        st.caption("The real, unmodified script from divi-demos — read-only.")
+
+    st.markdown(f"`{demo['original_file']}`")
     with open(original_path) as f:
         original_code = f.read()
+    st.code(original_code, language="python", line_numbers=True)
 
-    with st.expander(f"📄 View source — {demo['original_file']}", expanded=False):
-        if demo.get("no_single_source"):
-            st.caption(
-                "This demo has no single original script — it's built from "
-                "notebook cells. Showing the wrapper that reproduces them instead."
-            )
-        else:
-            st.caption("The real, unmodified script from divi-demos — read-only.")
-        st.code(original_code, language="python", line_numbers=True)
+
+with st.sidebar:
+    st.divider()
+    if st.button(f"📄 View source — {demo['original_file']}", use_container_width=True):
+        show_source_dialog(demo)
 
 st.subheader(selected_label)
 st.caption(demo["category"])
@@ -139,7 +143,7 @@ with open(data_path) as f:
 col_config, col_results = st.columns([1, 1.6])
 
 with col_config:
-    st.markdown("**1. Configure** — edit the data file, no code involved.")
+    st.markdown("**1. Configure**")
     edited_yaml = st.text_area(demo["data_file"], raw_yaml, height=420, key=selected_label)
     run_clicked = st.button("Run demo", type="primary", use_container_width=True)
 
