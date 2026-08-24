@@ -1,0 +1,18 @@
+# Travelling Salesman — PCE Compression (Part C) — demo data file
+# Edit the values below to change the demo. No code changes needed.
+# Same small instance as "Travelling Salesman" (Part A), but solved with
+# PCE compression instead of direct QAOA — fewer qubits, same problem.
+
+n_cities: 4
+seed: 42
+
+pce:
+  n_layers: 3
+  max_iterations: 20
+  alpha: 3.0
+  population_size: 30
+  encoding_type: "poly"    # "poly" (fewer qubits) or "dense" (even fewer)
+
+backend:
+  use_cloud: false     # true = QoroService, false = local MaestroSimulator
+  shots: 10000

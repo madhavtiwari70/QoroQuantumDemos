@@ -44,23 +44,30 @@ uv sync
 uv run streamlit run streamlit_app.py
 ```
 
-## Status — all individually verified with real Divi execution, against the vendor copy
+## Status — all 10 demos individually verified with real Divi execution, against the vendor copy
+
+Every scenario from all 6 original demo scripts is now covered — nothing left out.
 
 | Demo | Category | Covers |
 |---|---|---|
 | Spin Dynamics (TFIM) | Time Evolution | Full demo |
 | Economic Load Dispatch | Optimization · PCE-VQE | 3-generator scenario |
+| Economic Load Dispatch — Six Generators | Optimization · PCE-VQE | 6-generator scenario (24 variables) |
 | Quantum-Guided Cluster | QAOA | Full demo |
-| Travelling Salesman | QAOA · QUBO | "Part A: Direct QAOA" |
-| Travelling Salesman — Partitioned | QAOA · QUBO (larger instance) | "Part B: Partitioned QAOA" |
+| Travelling Salesman | QAOA · QUBO | Part A: Direct QAOA |
+| Travelling Salesman — Partitioned | QAOA · QUBO | Part B: Partitioned QAOA (larger instance) |
+| Travelling Salesman — PCE Compression | QAOA · QUBO | Part C: PCE compression (qubit-compressed) |
 | Minimum Birkhoff Decomposition | Optimization | Full demo |
-| Portfolio Optimization | QAOA | Small synthetic portfolio only |
+| Portfolio Optimization | QAOA | Small synthetic portfolio (8 assets) |
+| Portfolio Optimization — Full S&P 500 | QAOA | Real 2016 S&P 500 data (484 assets, partitioned) |
 
-## Still missing (not yet built)
-
-- Travelling Salesman — PCE Compression (Part C of the same original script)
-- Economic Load Dispatch — 6-generator scenario
-- Portfolio Optimization — real 480-asset S&P 500 scenario
+**Note on the Full S&P 500 demo:** this is a genuinely large job — 484 assets
+partitioned into ~45 sub-problems, each solved independently. On local
+simulation it took ~4 minutes even with iteration counts turned down for
+testing; the default config in `data/portfolio_optimization_full.yaml` will
+take noticeably longer. Consider warning whoever runs it live on a call
+that this one takes a while, or turn down `qaoa.max_iterations` and
+`qaoa.population_size` in that data file for a faster (less optimized) demo run.
 
 ## Known extra dependencies
 

@@ -54,12 +54,28 @@ DEMOS = {
         "original_file": "travelling_salesman.py",
         "vendor_folder": "travelling_salesman",  # shares the same upstream source file
     },
+    "Travelling Salesman — PCE Compression": {
+        "category": "QAOA · QUBO (qubit-compressed)",
+        "data_file": "travelling_salesman_pce.yaml",
+        "folder": "travelling_salesman_pce",
+        "module": "tsp_pce_wrapper",
+        "original_file": "travelling_salesman.py",
+        "vendor_folder": "travelling_salesman",
+    },
     "Minimum Birkhoff Decomposition": {
         "category": "Optimization",
         "data_file": "minimum_birkhoff_decomposition.yaml",
         "folder": "minimum_birkhoff_decomposition",
         "module": "birkhoff_wrapper",
         "original_file": "main.py",
+    },
+    "Economic Load Dispatch — Six Generators": {
+        "category": "Optimization · PCE-VQE (larger instance)",
+        "data_file": "economic_load_dispatch_6gen.yaml",
+        "folder": "economic_load_dispatch_6gen",
+        "module": "eld_6gen_wrapper",
+        "original_file": "economic_load_dispatch.py",
+        "vendor_folder": "economic_load_dispatch",
     },
     "Portfolio Optimization": {
         "category": "QAOA",
@@ -69,6 +85,15 @@ DEMOS = {
         # No single original script for this one — it was built from
         # notebook cells, not one .py file. Show the wrapper instead.
         "original_file": "portfolio_wrapper.py",
+        "no_single_source": True,
+    },
+    "Portfolio Optimization — Full S&P 500": {
+        "category": "QAOA (large, real data, partitioned)",
+        "data_file": "portfolio_optimization_full.yaml",
+        "folder": "portfolio_optimization_full",
+        "module": "portfolio_full_wrapper",
+        "original_file": "portfolio_full_wrapper.py",
+        "no_single_source": True,
     },
 }
 
@@ -89,7 +114,7 @@ demo = DEMOS[selected_label]
 
 with st.sidebar:
     st.divider()
-    if selected_label == "Portfolio Optimization":
+    if demo.get("no_single_source"):
         original_path = os.path.join(HERE, "demos", demo["folder"], demo["original_file"])
     else:
         vendor_folder = demo.get("vendor_folder", demo["folder"])
@@ -98,7 +123,7 @@ with st.sidebar:
         original_code = f.read()
 
     with st.expander(f"📄 View source — {demo['original_file']}", expanded=False):
-        if selected_label == "Portfolio Optimization":
+        if demo.get("no_single_source"):
             st.caption(
                 "This demo has no single original script — it's built from "
                 "notebook cells. Showing the wrapper that reproduces them instead."
@@ -178,7 +203,7 @@ with col_results:
                 m2.metric("QDrift runtime", f"{r['runtime_qdrift_s']:.2f} s")
                 st.divider()
 
-        elif selected_label == "Economic Load Dispatch":
+        elif selected_label in ("Economic Load Dispatch", "Economic Load Dispatch — Six Generators"):
             m1, m2, m3 = st.columns(3)
             m1.metric("Variables", result["n_variables"])
             m2.metric("PCE qubits", result["n_qubits"])
@@ -210,6 +235,17 @@ with col_results:
             m2.metric("Quantum distance", f"{result['quantum_distance']:.4f}")
             m3.metric("Ratio", f"{result['ratio']:.3f}" if result["ratio"] else "-")
 
+        elif selected_label == "Travelling Salesman — PCE Compression":
+            m1, m2, m3 = st.columns(3)
+            m1.metric("Direct qubits", result["direct_qubits"])
+            m2.metric("PCE qubits", result["pce_qubits"])
+            m3.metric("Runtime", f"{result['runtime_s']:.1f} s")
+            st.markdown(
+                f"**Classical:** {result['classical_distance']:.4f}  ·  "
+                f"**PCE:** {result['pce_distance']:.4f}  ·  "
+                f"**Ratio:** {result['ratio']:.3f}" if result["ratio"] else ""
+            )
+
         elif selected_label == "Minimum Birkhoff Decomposition":
             st.code(result["output_text"], language=None)
 
@@ -219,3 +255,14 @@ with col_results:
             m2.metric("Runtime", f"{result['runtime_s']:.1f} s")
             st.markdown(f"**Assets selected:** {result['assets_selected']}")
             st.code(result["evaluation_text"], language=None)
+
+        elif selected_label == "Portfolio Optimization — Full S&P 500":
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("Assets", result["n_assets"])
+            m2.metric("Partitions", result["n_partitions"])
+            m3.metric("Circuits run", result["total_circuit_count"])
+            m4.metric("Runtime", f"{result['runtime_s']:.1f} s")
+            st.markdown(
+                f"**Assets selected:** {result['n_selected']} of {result['n_assets']}  ·  "
+                f"**QUBO energy:** {result['energy']:.6f}"
+            )

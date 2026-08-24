@@ -1,0 +1,75 @@
+# Economic Load Dispatch — Six Generators — demo data file
+# Edit the values below to change the demo. No code changes needed.
+# Larger version of "Economic Load Dispatch" (24 binary variables instead
+# of 12) from the same original script — uses simulated annealing for the
+# classical baseline instead of brute force, since 24 variables is too many
+# to brute-force exhaustively.
+
+demand: 390   # MW — total power the grid needs (scales with added capacity)
+
+generators:
+  - name: "Gen 1"
+    a: 20
+    b: 2.0
+    c: 0.010
+    P_min: 40
+    P_max: 115
+    poz_low: 60
+    poz_high: 75
+
+  - name: "Gen 2"
+    a: 15
+    b: 1.5
+    c: 0.020
+    P_min: 20
+    P_max: 95
+    poz_low: 40
+    poz_high: 55
+
+  - name: "Gen 3"
+    a: 25
+    b: 1.8
+    c: 0.015
+    P_min: 30
+    P_max: 105
+    poz_low: 50
+    poz_high: 65
+
+  - name: "Gen 4"
+    a: 18
+    b: 1.7
+    c: 0.012
+    P_min: 35
+    P_max: 110
+    poz_low: 55
+    poz_high: 70
+
+  - name: "Gen 5"
+    a: 22
+    b: 2.2
+    c: 0.009
+    P_min: 50
+    P_max: 120
+    poz_low: 65
+    poz_high: 80
+
+  - name: "Gen 6"
+    a: 12
+    b: 1.3
+    c: 0.018
+    P_min: 25
+    P_max: 90
+    poz_low: 45
+    poz_high: 60
+
+classical:
+  num_reads: 100   # simulated-annealing samples for the classical baseline
+
+pce:
+  n_layers: 3
+  max_iterations: 10
+  population_size: 50
+
+backend:
+  use_cloud: false     # true = QoroService, false = local MaestroSimulator
+  shots: 10000
