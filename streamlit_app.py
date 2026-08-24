@@ -105,11 +105,7 @@ with st.sidebar:
     st.subheader("Demos")
     selected_label = st.radio("Select a demo", list(DEMOS.keys()), label_visibility="collapsed")
     st.divider()
-    st.caption(
-        "Some demos here cover a focused part of the original notebook/script "
-        "(noted in each data file's comments) rather than every scenario, "
-        "to keep each config schema clear."
-    )
+  
 
 demo = DEMOS[selected_label]
 
