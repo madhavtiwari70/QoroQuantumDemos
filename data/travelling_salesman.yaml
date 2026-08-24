@@ -1,9 +1,8 @@
 # Travelling Salesman Problem — demo data file
-# Edit the values below to change the demo. No code changes needed.
-# (This covers "Part A: Direct QAOA" from the original demo — the small,
-# fully-connected-qubit instance. The original demo's Part B/C variants
-# — partitioned QAOA on more cities, and PCE compression — aren't
-# included in this config-driven version.)
+# Covers "Part A: Direct QAOA" from the original demo — a small,
+# fully-connected-qubit instance. See the separate "Travelling Salesman —
+# Partitioned" and "Travelling Salesman — PCE Compression" demos for the
+# other two scenarios from the same original script.
 
 n_cities: 4
 seed: 42

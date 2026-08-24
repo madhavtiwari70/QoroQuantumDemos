@@ -1,5 +1,6 @@
 # Minimum Birkhoff Decomposition — demo data file
-# Edit the values below to change the demo. No code changes needed.
+# Decomposes a doubly-stochastic matrix into a weighted sum of
+# permutation matrices, solved via a parameterized quantum circuit.
 
 dim: 4                # matrix dimension: 3 or 4
 comb: 2                # number of permutations in the combination

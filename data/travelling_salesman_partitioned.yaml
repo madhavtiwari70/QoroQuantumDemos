@@ -1,5 +1,4 @@
 # Travelling Salesman — Partitioned (Part B) — demo data file
-# Edit the values below to change the demo. No code changes needed.
 # This is the larger-instance, partitioned-QAOA scenario from the same
 # original script as "Travelling Salesman" — see that demo's data file
 # for the small direct-QAOA scenario instead.

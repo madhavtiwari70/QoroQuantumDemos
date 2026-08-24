@@ -1,5 +1,4 @@
 # Portfolio Optimization — Full S&P 500 — demo data file
-# Edit the values below to change the demo. No code changes needed.
 # This is the large, real-data scenario from the same original notebook
 # as "Portfolio Optimization" — real S&P 500 returns/covariance from
 # 2016-01-01, partitioned across many QAOA sub-problems in parallel.

@@ -1,9 +1,7 @@
 # Portfolio Optimization — demo data file
-# Edit the values below to change the demo. No code changes needed.
-# (This covers the small synthetic-portfolio part of the original notebook.
-# The notebook's second part — a real 480-asset S&P 500 portfolio with
-# partitioned QAOA — isn't included in this config-driven version, since
-# it's a much longer-running scenario.)
+# Covers the small synthetic-portfolio part of the original notebook.
+# See the separate "Portfolio Optimization — Full S&P 500" demo for the
+# real 480-asset, partitioned-QAOA scenario from the same notebook.
 
 n_assets: 8
 seed: 42

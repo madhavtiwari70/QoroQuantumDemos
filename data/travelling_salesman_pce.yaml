@@ -1,5 +1,4 @@
 # Travelling Salesman — PCE Compression (Part C) — demo data file
-# Edit the values below to change the demo. No code changes needed.
 # Same small instance as "Travelling Salesman" (Part A), but solved with
 # PCE compression instead of direct QAOA — fewer qubits, same problem.
 

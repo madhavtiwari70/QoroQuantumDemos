@@ -1,5 +1,6 @@
 # Quantum-Guided Cluster Algorithm — demo data file
-# Edit the values below to change the demo. No code changes needed.
+# QAOA extracts two-point correlations to guide a classical cluster
+# Monte Carlo solver toward the Max-Cut solution.
 
 graph:
   n_nodes: 16

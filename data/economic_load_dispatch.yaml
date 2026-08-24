@@ -1,5 +1,4 @@
 # Economic Load Dispatch — demo data file
-# Edit the values below to change the demo. No code changes needed.
 # (This covers the 3-generator scenario from the original demo.)
 
 demand: 195   # MW — total power the grid needs

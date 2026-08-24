@@ -1,10 +1,11 @@
 """
-Divi Demo Console — all current divi-demos, data-file driven.
+Divi Demo Console
 
-Pick a demo, edit its data file, click Run, get real results from real
-Divi execution. No code changes needed to change the demo's parameters.
+Streamlit UI for running the Divi demos in demos/, each configured via
+its corresponding data file in data/ and executing the real, unmodified
+Divi logic vendored into vendor/divi-demos/ from QoroQuantum/divi-demos.
 
-Run locally with:  streamlit run streamlit_app.py
+Run locally with:  uv run streamlit run streamlit_app.py
 """
 
 import sys
@@ -98,7 +99,7 @@ DEMOS = {
 }
 
 st.title("Divi Demo Console")
-st.caption("Pick a demo, edit its data file, click Run. No notebook, no code changes.")
+st.caption("Select a demo, review or edit its configuration, and run it.")
 
 with st.sidebar:
     st.subheader("Demos")

@@ -1,5 +1,4 @@
 # Economic Load Dispatch — Six Generators — demo data file
-# Edit the values below to change the demo. No code changes needed.
 # Larger version of "Economic Load Dispatch" (24 binary variables instead
 # of 12) from the same original script — uses simulated annealing for the
 # classical baseline instead of brute force, since 24 variables is too many
