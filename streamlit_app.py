@@ -46,6 +46,14 @@ DEMOS = {
         "module": "tsp_wrapper",
         "original_file": "travelling_salesman.py",
     },
+    "Travelling Salesman — Partitioned": {
+        "category": "QAOA · QUBO (larger instance)",
+        "data_file": "travelling_salesman_partitioned.yaml",
+        "folder": "travelling_salesman_partitioned",
+        "module": "tsp_partitioned_wrapper",
+        "original_file": "travelling_salesman.py",
+        "vendor_folder": "travelling_salesman",  # shares the same upstream source file
+    },
     "Minimum Birkhoff Decomposition": {
         "category": "Optimization",
         "data_file": "minimum_birkhoff_decomposition.yaml",
@@ -84,7 +92,8 @@ with st.sidebar:
     if selected_label == "Portfolio Optimization":
         original_path = os.path.join(HERE, "demos", demo["folder"], demo["original_file"])
     else:
-        original_path = os.path.join(HERE, "vendor", "divi-demos", demo["folder"], demo["original_file"])
+        vendor_folder = demo.get("vendor_folder", demo["folder"])
+        original_path = os.path.join(HERE, "vendor", "divi-demos", vendor_folder, demo["original_file"])
     with open(original_path) as f:
         original_code = f.read()
 
@@ -194,7 +203,7 @@ with col_results:
             for p in result["plot_paths"]:
                 st.image(p)
 
-        elif selected_label == "Travelling Salesman":
+        elif selected_label in ("Travelling Salesman", "Travelling Salesman — Partitioned"):
             st.pyplot(result["figure"])
             m1, m2, m3 = st.columns(3)
             m1.metric("Classical distance", f"{result['classical_distance']:.4f}")

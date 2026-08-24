@@ -51,9 +51,16 @@ uv run streamlit run streamlit_app.py
 | Spin Dynamics (TFIM) | Time Evolution | Full demo |
 | Economic Load Dispatch | Optimization · PCE-VQE | 3-generator scenario |
 | Quantum-Guided Cluster | QAOA | Full demo |
-| Travelling Salesman | QAOA · QUBO | "Part A: Direct QAOA" only |
+| Travelling Salesman | QAOA · QUBO | "Part A: Direct QAOA" |
+| Travelling Salesman — Partitioned | QAOA · QUBO (larger instance) | "Part B: Partitioned QAOA" |
 | Minimum Birkhoff Decomposition | Optimization | Full demo |
 | Portfolio Optimization | QAOA | Small synthetic portfolio only |
+
+## Still missing (not yet built)
+
+- Travelling Salesman — PCE Compression (Part C of the same original script)
+- Economic Load Dispatch — 6-generator scenario
+- Portfolio Optimization — real 480-asset S&P 500 scenario
 
 ## Known extra dependencies
 

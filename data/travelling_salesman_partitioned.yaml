@@ -1,0 +1,19 @@
+# Travelling Salesman — Partitioned (Part B) — demo data file
+# Edit the values below to change the demo. No code changes needed.
+# This is the larger-instance, partitioned-QAOA scenario from the same
+# original script as "Travelling Salesman" — see that demo's data file
+# for the small direct-QAOA scenario instead.
+
+n_cities: 8
+seed: 42
+
+partitioning:
+  decomposer_size: 15
+
+qaoa:
+  n_layers: 2
+  max_iterations: 10
+
+backend:
+  use_cloud: false     # true = QoroService, false = local MaestroSimulator
+  shots: 20000
