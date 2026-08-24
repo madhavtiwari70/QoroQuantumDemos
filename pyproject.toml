@@ -1,0 +1,20 @@
+[project]
+name = "divi-demo-console"
+version = "0.1.0"
+description = "Divi Demo Console — all 6 current divi-demos, data-driven Streamlit app."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "streamlit>=1.60.0",
+    "qoro-divi[jupyter]==0.13.0",
+    "pyyaml",
+    "matplotlib",
+    "numpy",
+    "dimod",
+    "dwave-neal",
+    "docplex",
+    "cplex",
+]
+
+[tool.uv]
+package = false

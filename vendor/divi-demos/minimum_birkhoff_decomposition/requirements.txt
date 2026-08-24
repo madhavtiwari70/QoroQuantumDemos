@@ -1,0 +1,3 @@
+qoro-divi==0.13.0
+docplex
+cplex
