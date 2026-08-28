@@ -1,10 +1,7 @@
 # Divi Demo Console
 
-A Streamlit app for running Divi's quantum algorithm demos. Each demo's
-configuration (problem size, backend, algorithm parameters) lives in a
-data file that can be edited directly in the UI before running, while the
-underlying Divi logic is the real, unmodified code from
-[QoroQuantum/divi-demos](https://github.com/QoroQuantum/divi-demos).
+Card #208: pick a demo, edit its data file, click Run, get real results
+from real Divi execution. No notebook, no code changes.
 
 ## Repo structure — vendor vs. wrapper
 

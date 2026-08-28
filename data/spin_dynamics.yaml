@@ -1,6 +1,4 @@
 # Spin Dynamics (TFIM) — demo data file
-# Time evolution of a spin chain under the Transverse-Field Ising Model,
-# comparing Exact Trotterization against QDrift.
 
 simulation:
   n_qubits: 6

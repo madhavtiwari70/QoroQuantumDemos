@@ -14,4 +14,5 @@ qaoa:
   n_best_sets: 5
 
 backend:
+  use_cloud: false     # true = QoroService, false = local MaestroSimulator
   shots: 10000

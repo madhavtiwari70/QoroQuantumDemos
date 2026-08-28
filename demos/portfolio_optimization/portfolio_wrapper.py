@@ -21,10 +21,17 @@ import numpy as np
 import dimod
 
 from utils import build_full_portfolio_qubo, evaluate_solution
-from divi.backends import MaestroSimulator
+from divi.backends import MaestroSimulator, QoroService, JobConfig
 from divi.qprog import QAOA
 from divi.qprog.problems import BinaryOptimizationProblem
 from divi.qprog.optimizers import MonteCarloOptimizer
+
+
+def _resolve_backend(cfg: dict):
+    b = cfg["backend"]
+    if b.get("use_cloud", False):
+        return QoroService(job_config=JobConfig(shots=b["shots"]))
+    return MaestroSimulator(shots=b["shots"])
 
 
 def run_from_config(cfg: dict, progress_callback=None) -> dict:
@@ -44,14 +51,15 @@ def run_from_config(cfg: dict, progress_callback=None) -> dict:
     bqm = dimod.BinaryQuadraticModel(qubo_matrix, "BINARY")
 
     qaoa_cfg = cfg["qaoa"]
-    backend = MaestroSimulator(shots=cfg["backend"]["shots"])
+    backend = _resolve_backend(cfg)
     optim = MonteCarloOptimizer(
         population_size=qaoa_cfg["population_size"],
         n_best_sets=qaoa_cfg["n_best_sets"],
     )
 
     if progress_callback:
-        progress_callback("Running QAOA...")
+        backend_name = "QoroService" if cfg["backend"].get("use_cloud", False) else "local MaestroSimulator"
+        progress_callback(f"Running QAOA on {backend_name}...")
 
     t0 = time.time()
     qaoa = QAOA(
