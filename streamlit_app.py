@@ -133,6 +133,40 @@ with st.sidebar:
     if st.button(f"📄 View source — {demo['original_file']}", use_container_width=True):
         show_source_dialog(demo)
 
+    st.divider()
+    st.subheader("Execution Backend")
+    backend_mode = st.radio(
+        "Choose backend",
+        options=["Local (MaestroSimulator)", "Qoro Cloud Service"],
+        index=0,
+        help="Run locally with MaestroSimulator or remotely with Qoro Cloud Service.",
+    )
+
+    use_cloud = backend_mode == "Qoro Cloud Service"
+
+    if use_cloud:
+        if "qoro_api_token" not in st.session_state:
+            default_token = ""
+            try:
+                default_token = st.secrets.get("QORO_API_KEY", "")
+            except Exception:
+                pass
+            if not default_token:
+                default_token = os.environ.get("QORO_API_KEY", "")
+            st.session_state["qoro_api_token"] = default_token
+
+        api_token = st.text_input(
+            "Qoro API Token",
+            type="password",
+            key="qoro_api_token",
+            placeholder="Enter token…",
+            help="Your API key from dash.qoroquantum.net. Masked by default for privacy.",
+        )
+        if api_token:
+            os.environ["QORO_API_KEY"] = api_token.strip()
+    else:
+        api_token = ""
+
 st.subheader(selected_label)
 st.caption(demo["category"])
 
@@ -145,6 +179,8 @@ col_config, col_results = st.columns([1, 1.6])
 with col_config:
     st.markdown("**1. Configure**")
     edited_yaml = st.text_area(demo["data_file"], raw_yaml, height=420, key=selected_label)
+    target_backend_str = "Qoro Cloud Service" if use_cloud else "Local (MaestroSimulator)"
+    st.caption(f"Target backend: **{target_backend_str}**")
     run_clicked = st.button("Run demo", type="primary", use_container_width=True)
 
 with col_results:
@@ -158,6 +194,17 @@ with col_results:
         except yaml.YAMLError as e:
             st.error(f"Couldn't parse the data file: {e}")
             st.stop()
+
+        if "backend" not in cfg or not isinstance(cfg["backend"], dict):
+            cfg["backend"] = {}
+        cfg["backend"]["use_cloud"] = use_cloud
+
+        if use_cloud:
+            token = (api_token or "").strip() or os.environ.get("QORO_API_KEY", "").strip()
+            if not token:
+                st.error("Qoro API Token is required for Qoro Cloud execution. Please enter your token in the sidebar.")
+                st.stop()
+            os.environ["QORO_API_KEY"] = token
 
         status_box = st.empty()
 
@@ -187,7 +234,7 @@ with col_results:
         sys.path.insert(0, os.path.join(demos_root, demo["folder"]))
         module = importlib.import_module(demo["module"])
 
-        with st.spinner("Executing on backend…"):
+        with st.spinner(f"Executing on {target_backend_str}…"):
             result = module.run_from_config(cfg, progress_callback=on_progress)
 
         status_box.empty()
