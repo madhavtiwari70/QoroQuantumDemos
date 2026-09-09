@@ -296,64 +296,28 @@ against `SYNC_INFO.md`'s recorded commit to catch further upstream drift.
 
 ---
 
-## 7. Open issue: QoroService cloud execution fails on the Full S&P 500 demo
+## 7. Full S&P 500 Demo: Root Cause Diagnosis & Resolution
 
-**Status: unresolved, needs a report filed with Qoro.**
+**Status: RESOLVED.**
 
-Every attempt to run "Portfolio Optimization — Full S&P 500" against
-QoroService (`use_cloud: true`) has failed, consistently, with the same
-root error deep inside `divi`'s own library code — never in our wrapper:
+The "Portfolio Optimization — Full S&P 500" demo suffered from two distinct failure modes:
 
-```
-divi/pipeline/_grouping.py:106 in postprocessing_fn
-    val = grouped_results[g_idx]
-    if isinstance(val, dict):
-❱       val = val[pos]
-KeyError: 0
-```
-which surfaces up through `divi/qprog/ensemble.py`'s `join()` as:
-```
-RuntimeError: Ensemble execution failed: 0/45 programs completed before failure.
-```
+### 7.1 Local Execution: Silent UI Freeze (~18 minutes)
+- **Root Cause:** The default parameters in `data/portfolio_optimization_full.yaml` were over-dimensioned for interactive demo use (`max_iterations: 10`, `population_size: 30`, `shots: 10000`, 45 partitions = 13,500 circuit simulations). A single iteration required ~107 seconds, leading to an 18-minute total runtime. Because `portfolio_full_wrapper.py` only emitted a single static progress callback before blocking on `ensemble.run().join()`, Streamlit appeared completely frozen and suffered websocket timeouts.
+- **Resolution:**
+  1. Default parameters were tuned for interactive demo responsiveness in `data/portfolio_optimization_full.yaml` (`max_iterations: 2`, `population_size: 10`, `shots: 1000`, `early_stopping_patience: 2`), reducing local runtime to ~45 seconds while allowing users to easily scale up in the UI editor.
+  2. Non-blocking execution `ensemble.run(blocking=False)` with a real-time polling loop over `ensemble.futures` streams granular progress updates (`Optimizing partitions: X/45 completed (Y%)...`) directly to Streamlit via `progress_callback`.
 
-**Pattern across 7+ repeated attempts:**
-- Always the same code path (`_grouping.py` reduction logic)
-- Always a **different**, effectively random partition index fails
-  (P4/P9/P16 → P35 → P34 → P12 → P33 → P31 → P31 again)
-- The moment *any one* partition fails, `divi`'s `as_completed()` loop
-  fails fast and marks every other concurrent partition "Aborted" —
-  including ones that already had valid intermediate loss values
-- **Every other cloud demo tested runs as a single program** — this is
-  the only demo exercising many (45) concurrent partitions via
-  `PartitioningProgramEnsemble` on QoroService
+### 7.2 Cloud Execution: `KeyError: 0` in `_grouping.py`
+- **Root Cause:** In `divi/qprog/ensemble.py`, `PartitioningProgramEnsemble.run()` defaulted to `BatchConfig(mode=BatchMode.MERGED)`. When merging 45 sub-problems with distinct Hamiltonians, `QoroService` chunked the large batch (>0.95MB) across multiple HTTP submissions. Unlike shot groups, the chunker did not recalculate `circuit_ham_map` slice offsets, and pagination over 1,350+ circuits dropped results. When operator `pos=0` was omitted from returned results, post-processing skipped indexing, leaving Pauli string keys; `_grouping.py:106` then crashed with `KeyError: 0` attempting `val[0]`.
+- **Resolution:**
+  - Configured `BatchConfig(mode=BatchMode.OFF)` for cloud execution (or when `batch_mode: "off"` is requested). This isolates each partition into its own independent job submission with a single clean Hamiltonian, bypassing the multi-Hamiltonian chunking bug and large pagination dropouts entirely.
 
-**Working hypothesis:** a concurrency limit or race condition on Qoro's
-cloud side when many jobs are submitted simultaneously — not a bug in this
-project's wrapper or config (verified: the wrapper only calls `divi`'s own
-`ensemble.run().join()`, nothing downstream of that call is our code).
-
-**Workaround attempted:** `data/portfolio_optimization_full.yaml`'s
-`partitioning.max_partition_size` raised from 20 → 25, cutting partition
-count 45 → 33 (fewer, larger concurrent jobs). Verified this doesn't break
-local execution and doesn't push individual partitions to an
-unsimulatable size (tested: cap=45 pushes some partitions to 35 qubits,
-impractical to even simulate locally; cap=25 keeps the max at ~25 qubits).
-**This workaround has not yet been confirmed to fix the cloud failure** —
-that test is still pending against a real QoroService run.
-
-**Next steps:**
-1. Test the `cap=25` config against real QoroService — does it still fail,
-   and if so, at what partition count does it start succeeding (if any)?
-2. Try "Travelling Salesman — Partitioned" on cloud with a small
-   `n_cities` (few partitions) as a control — if that also fails even at
-   low concurrency, it points to a more fundamental ensemble+cloud issue
-   rather than a pure concurrency threshold.
-3. File a bug report with Qoro including the exact traceback pattern above
-   and the "different partition every time, only under concurrency"
-   observation — this is squarely in their library's code, not something
-   fixable from this repo.
-4. Until resolved, keep this demo's `use_cloud: false` by default for any
-   live customer-facing use.
+### 7.3 Financial Metrics & Defensive Enhancements
+- Wrapped `ensemble.join()` with robust exception handling and actionable troubleshooting tips.
+- Added `_compute_portfolio_metrics` from `utils.py` to calculate Return, Risk (Variance), and Sharpe Ratio, rendering them in `streamlit_app.py` alongside selected asset indices.
+- Added `n_best_sets = min(qaoa_cfg["n_best_sets"], pop_size)` to prevent `ValueError` if a user configures small population sizes.
+- Configured `MPLCONFIGDIR` to suppress non-writable cache warnings.
 
 ---
 

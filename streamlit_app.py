@@ -10,6 +10,10 @@ Run locally with:  uv run streamlit run streamlit_app.py
 
 import sys
 import os
+
+# Suppress matplotlib font cache rebuild / permission warnings
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(os.path.dirname(__file__), ".cache", "matplotlib"))
+
 import yaml
 import streamlit as st
 
@@ -310,7 +314,16 @@ with col_results:
             m2.metric("Partitions", result["n_partitions"])
             m3.metric("Circuits run", result["total_circuit_count"])
             m4.metric("Runtime", f"{result['runtime_s']:.1f} s")
-            st.markdown(
-                f"**Assets selected:** {result['n_selected']} of {result['n_assets']}  ·  "
-                f"**QUBO energy:** {result['energy']:.6f}"
-            )
+
+            f1, f2, f3, f4 = st.columns(4)
+            f1.metric("Selected", f"{result['n_selected']} assets")
+            f2.metric("Return", f"{result.get('portfolio_return', 0.0):.4f}")
+            f3.metric("Risk (Variance)", f"{result.get('portfolio_risk', 0.0):.4f}")
+            f4.metric("Sharpe Ratio", f"{result.get('sharpe_ratio', 0.0):.4f}")
+
+            st.markdown(f"**QUBO energy:** `{result['energy']:.6f}`")
+            if "selected_assets" in result and result["selected_assets"]:
+                preview = str(result["selected_assets"][:25])
+                if len(result["selected_assets"]) > 25:
+                    preview = preview[:-1] + ", …]"
+                st.markdown(f"**Selected asset indices ({result['n_selected']}):** `{preview}`")
